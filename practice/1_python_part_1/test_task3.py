@@ -2,7 +2,7 @@ from unittest import TestCase
 from task3 import build_from_unique_words
 
 
-class TestTask1(TestCase):
+class TestTask3(TestCase):
     def test1(self):
         self.expected = 'b 2 dog'
         self.result = build_from_unique_words('a b c', '1 1 1 2 3', 'cat dog milk', word_number=1)

@@ -2,7 +2,7 @@ from unittest import TestCase
 from task5 import remove_duplicated_words
 
 
-class TestTask1(TestCase):
+class TestTask5(TestCase):
     def test1(self):
         self.expected = 'cat dog 1 2'
         self.result = remove_duplicated_words('cat cat dog 1 dog 2')
