@@ -26,18 +26,40 @@ Methods:
 PEP8 comply strictly.
 """
 import datetime
+import typing
 
 
 class Teacher:
-    ...
+    def __init__(self, last_name: str, first_name: str) -> None:
+        self.last_name = last_name
+        self.first_name = first_name
+
+    @staticmethod
+    def create_homework(text: str, days: float) -> 'Homework':
+        return Homework(text, datetime.timedelta(days=days))
 
 
 class Student:
-    ...
+    def __init__(self, last_name: str, first_name: str) -> None:
+        self.last_name = last_name
+        self.first_name = first_name
+
+    @staticmethod
+    def do_homework(homework: 'Homework') -> typing.Union[None, 'Homework']:
+        if homework.is_active():
+            return homework
+        else:
+            print('You are late')
 
 
 class Homework:
-    ...
+    def __init__(self, text: str, deadline: datetime.timedelta) -> None:
+        self.text = text
+        self.deadline = deadline
+        self.created = datetime.datetime.now()
+
+    def is_active(self) -> bool:
+        return self.created + datetime.timedelta(days=self.deadline.days) > datetime.datetime.now()
 
 
 if __name__ == '__main__':
