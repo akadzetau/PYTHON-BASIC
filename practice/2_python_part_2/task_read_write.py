@@ -29,11 +29,11 @@ def read_files(path: str) -> list:
     return result
 
 
-def write_file(file: str, file_content: str) -> None:
+def write_file(file: str, file_content: list) -> None:
     with open(file, 'w') as f:
-        f.write(file_content)
+        f.write(", ".join(file_content))
 
 
 if __name__ == "__main__":
     content = read_files("files")
-    write_file("result.txt", ", ".join(content))
+    write_file("result.txt", content)

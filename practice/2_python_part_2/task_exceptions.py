@@ -16,8 +16,10 @@ In all cases it should print "Division finished"
 """
 import typing
 
+
 class DivisionByOneException(Exception):
     pass
+
 
 def division(x: int, y: int) -> typing.Union[None, int]:
     try:

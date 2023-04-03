@@ -63,8 +63,8 @@ class Homework:
 
 
 if __name__ == '__main__':
-    teacher = Teacher('Dmitry', 'Orlyakov')
-    student = Student('Vladislav', 'Popov')
+    teacher = Teacher('Orlyakov', 'Dmitry')
+    student = Student('Popov', 'Vladislav')
     teacher.last_name  # Daniil
     student.first_name  # Petrov
 
