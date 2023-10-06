@@ -13,8 +13,17 @@ If entered date is from future, return negative value for number of days
 from datetime import datetime
 
 
+class WrongFormatException(Exception):
+    pass
+
+
 def calculate_days(from_date: str) -> int:
-    ...
+    now = datetime.today().date()
+    try:
+        from_d = datetime.strptime(from_date, '%Y-%m-%d').date()
+        return (now - from_d).days
+    except ValueError:
+        raise WrongFormatException("Wrong date format")
 
 
 """

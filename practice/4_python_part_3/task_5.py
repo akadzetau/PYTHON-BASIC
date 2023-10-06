@@ -6,10 +6,16 @@ Examples:
      200, 'response data'
 """
 from typing import Tuple
-
+from urllib import request, error
 
 def make_request(url: str) -> Tuple[int, str]:
-    ...
+    try:
+        resp = request.urlopen(url)
+        return (resp.code, resp.read().decode(resp.headers.get_content_charset()))
+    except error.HTTPError as e:
+        return (e.reason.errno, e.reason.strerror)
+    except error.URLError as e:
+        return (e.reason.errno, e.reason.strerror)
 
 
 """
