@@ -22,3 +22,20 @@ def generate_words(n=20):
         words.append(word)
 
     return words
+
+
+def write_n(file: str, wrds: list):
+    with open(file, 'w', encoding='UTF-8') as f1:
+        f1.write("\n".join(wrds))
+
+
+def write_rev_sep(file: str, wrds: list):
+    wrds.reverse()
+    with open(file, 'w', encoding='CP1252') as f1:
+        f1.write(",".join(wrds))
+
+
+if __name__ == "__main__":
+    rnd_words = generate_words(20)
+    write_n('file1.txt', rnd_words)
+    write_rev_sep('file2.txt', rnd_words)
