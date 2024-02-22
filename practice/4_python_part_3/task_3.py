@@ -13,7 +13,8 @@ import re
 
 
 def is_http_domain(domain: str) -> bool:
-    ...
+    r = r"(^http[s]?:\/{2}.*[\/]?)"
+    return re.match(r, domain) is not None
 
 
 """
