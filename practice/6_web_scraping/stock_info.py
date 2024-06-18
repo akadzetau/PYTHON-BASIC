@@ -36,7 +36,7 @@ import requests
 from bs4 import BeautifulSoup
 import regex
 import json
-import os
+import os, sys
 import random
 import logging
 from stock_info_config import steps_config, user_agent
@@ -177,7 +177,7 @@ def get_stocks_by_ceo_age(stocks):
 
 
 def get_stocks_by_52_week_change(stocks):
-    stocks_by_52_week_change = [[v.get("name", None), k, v.get("weekChange52", None), v.get("totalCash", None)]
+    stocks_by_52_week_change = [[v.get("name", None), k, v.get("weekChange52", sys.float_info.min), v.get("totalCash", None)]
                                 for k, v in stocks.items()]
     return sorted(stocks_by_52_week_change, key=lambda x:x[2], reverse=True)[:10]
 

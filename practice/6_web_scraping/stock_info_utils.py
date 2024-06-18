@@ -2,11 +2,12 @@ import regex
 import logging
 from datetime import datetime
 
+sh = {"K": 1000, "M": 1000000, "B": 1000000000, "T": 1000000000000,}
+
 
 def get_country(soup, stock):
     try:
-        address = soup.find("div", {"class": "asset-profile-container"}).find("div").find("div").find_all("p")[0] \
-            .find_all(string=regex.compile("^[^0-9]+$"))
+        address = [l.text for l in soup.find("div", {"class": "company-info"}).find("div", {"class": "address"}).find_all("div")]
         if "http" in address[-1]: address.pop()
         return address[-1]
     except Exception as e:
@@ -15,14 +16,14 @@ def get_country(soup, stock):
 
 def get_employees(soup, stock):
     try:
-        return int(list(soup.find("div", {"class": "asset-profile-container"}).find("div").find("div")
-                        .find_all("p")[1].stripped_strings)[8].replace(",", ""))
+        return int(soup.find("div", {"class": "company-details"}).find("dl", {"class": "company-stats"})
+                   .find(string=regex.compile("Full Time Employees")).parent.parent.find("dd").text.replace(',', ''))
     except Exception as e:
         logging.error(f'Getting Employees for {stock} exception: {e}')
 
 
 def get_ceo_name(soup, stock):
-    ceo = soup.find("div", {"id": "Main"}).find("div").find("section").find("table").find(string=regex.compile("CEO"))
+    ceo = soup.find("main").find("section", {"data-testid": "key-executives"}).find("div", {"class": "table-container"}).find("table").find(string=regex.compile("CEO"))
     if ceo:
         try:
             return ceo.parent.parent.parent.find_all("td")[0].text
@@ -31,7 +32,7 @@ def get_ceo_name(soup, stock):
 
 
 def get_ceo_year_born(soup, stock):
-    ceo = soup.find("div", {"id": "Main"}).find("div").find("section").find("table").find(string=regex.compile("CEO"))
+    ceo = soup.find("main").find("section", {"data-testid": "key-executives"}).find("div", {"class": "table-container"}).find("table").find(string=regex.compile("CEO"))
     if ceo:
         try:
             ceo_year_born = ceo.parent.parent.parent.find_all("td")[4].text
@@ -42,10 +43,8 @@ def get_ceo_year_born(soup, stock):
 
 
 def get_total_cash(soup, stock):
-    sh = {"K": 1000, "M": 1000000, "B": 1000000000, "T": 1000000000000,}
     try:
-        total = soup.find("h3", string="Balance Sheet").parent.find("table").find("span", string="Total Cash") \
-            .parent.parent.find_all("td")[1].text
+        total = soup.find("h3", string="Balance Sheet").parent.parent.parent.find("table").find("td", string=regex.compile("Total Cash")).parent.find_all("td")[1].text
         if total != 'N/A':
             return float(total[:-1]) * sh.get(total[-1], 1)
     except Exception as e:
@@ -54,8 +53,10 @@ def get_total_cash(soup, stock):
 
 def get_week_change_52(soup, stock):
     try:
-        week_change52 = soup.find("h3", string="Stock Price History").parent.find("table") \
-            .find("span", string="52-Week Change").parent.parent.find_all("td")[1].text.replace("%", "")
+        tbl = soup.find("h3", string="Stock Price History").parent.parent.parent.find("table").find_all("td")
+        tbl_txt = [el.text.strip() for el in tbl]
+        el = [el for el in tbl_txt if el.startswith("52 Week Range")]
+        week_change52 = tbl[tbl_txt.index(el[0])+1].text.replace("%", "")
         if week_change52 != 'N/A':
             return float(week_change52)
     except Exception as e:
@@ -84,7 +85,7 @@ def get_pages(soup, rx_pages):
 
 
 def get_holders_table(soup):
-    return soup.find("span", string="Top Institutional Holders").parent.parent.find("table").find("tbody").find_all("tr")
+    return soup.find(string="Top Institutional Holders").parent.parent.parent.find("table").find("tbody").find_all("tr")
 
 
 def get_holder_name(holder, column):
@@ -92,15 +93,16 @@ def get_holder_name(holder, column):
 
 
 def get_holder_shares(holder, column):
-    return int(holder.find_all("td")[column].text.replace(",", ""))
+    shares = holder.find_all("td")[column].text.replace(",", "").strip()
+    return float(shares[:-1]) * sh.get(shares[-1], 1)
 
 
 def get_holder_date_reported(holder, column):
-    return datetime.strftime(datetime.strptime(holder.find_all("td")[column].text, "%b %d, %Y"), "%Y-%m-%d")
+    return datetime.strftime(datetime.strptime(holder.find_all("td")[column].text.strip(), "%b %d, %Y"), "%Y-%m-%d")
 
 
 def get_holder_p_out(holder, column):
-    return float(holder.find_all("td")[column].text[:-1])
+    return float(holder.find_all("td")[column].text.strip()[:-1])
 
 
 def get_holder_value(holder, column):
