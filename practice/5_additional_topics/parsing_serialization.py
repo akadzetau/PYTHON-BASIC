@@ -39,11 +39,9 @@ def main(source_dir: str):
 
     # Building result XML
     weather = etree.Element("weather", country="Spain", date="2021-09-25")
-    weather.append(
-        etree.SubElement(weather, "summary", mean_temp=str(temp_mean), mean_wind_speed=str(wind_speed_mean),
-                         coldest_place=coldest_city, warmest_place=warmest_city, windiest_place=windiest_city))
+    etree.SubElement(weather, "summary", mean_temp=str(temp_mean), mean_wind_speed=str(wind_speed_mean),
+                     coldest_place=coldest_city, warmest_place=warmest_city, windiest_place=windiest_city)
     cities = etree.SubElement(weather, "cities")
-    weather.append(cities)
     for city in results_step2:
         cities.append(
             etree.SubElement(cities, city["city"].replace(' ', '_'),
